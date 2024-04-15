@@ -2,14 +2,9 @@
   import * as Form from "$lib/components/ui/form";
   import { type SuperValidated, type Infer, superForm } from "sveltekit-superforms";
   import { zod, zodClient } from "sveltekit-superforms/adapters";
-  import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
   import { Input } from "$lib/components/ui/input";
   import { formSchema, type FormSchema } from "./schema";
   import { onMount } from 'svelte';
-  import { derived } from 'svelte/store';
-	import { ZodUndefined } from "zod";
-
-
  
   export let data: SuperValidated<Infer<FormSchema>>;
  
@@ -37,21 +32,7 @@
   async function doPost() {
     const res = await fetch('http://localhost:8080/createAd', {
         method: 'POST',
-        body: JSON.stringify({
-            isForetag: $formData.isForetag,
-            name: $formData.name,
-            phoneNumber: $formData.phoneNumber,
-            orgnr: $formData.orgnr,
-            delivery: $formData.delivery,
-            billing: $formData.billing,
-            billingPostalCode: $formData.billingPostalCode,
-            deliveryPostalCode: $formData.deliveryPostalCode,
-            deliveryOrt: $formData.deliveryOrt,
-            billingOrt: $formData.billingOrt,
-            rubrik: $formData.rubrik,
-            innehall: $formData.innehall,
-            pris: $formData.pris
-        })
+        body: JSON.stringify({ formData })
     });
     
   }
@@ -76,52 +57,48 @@
   }
 
   let adCost = 0;
-  let showSubscriber;
+  let subscriber:boolean; 
 
   $: {
 
-    if ($formData.isForetag == "false") {
+    if (subscriber) {
       adCost = 0;
-      showSubscriber = true;
     }
     
-    else if ($formData.isForetag == "true") {
+    else {
       adCost = 40;
-      showSubscriber = false;
     }
 
  }
 
  
 
+ const updateSubscribed = (event:InputEvent) => {
+  const target = event.currentTarget as HTMLInputElement
+  subscriber = target.value === "true" : true ? false
+ }
 
 </script>
 
 <div class="flex px-10">
 
+
+
 <form use:enhance class="w-1/2 grid grid-cols-2">
-  <Form.Fieldset {form} name="isForetag" class="order-1 col-span-2">
-    <Form.Legend>Skapa annons som prenumerant eller företag?</Form.Legend>
-    <RadioGroup.Root bind:value={$formData.isForetag} class="flex flex-col space-y-1">
-      <div class="flex items-center space-x-3 space-y-0">
+ 
+  
+  <Form.Field {form} name="isForetag" class="order-1 col-span-2">
         <Form.Control let:attrs>
-          <RadioGroup.Item value=false {...attrs} />
+          <input checked={subscriber} on:change={updateSubscribed} type="radio" name="subscriber" value={true} /> 
           <Form.Label class="font-normal">Prenumerant</Form.Label>
-        </Form.Control>
-      </div>
-      <div class="flex items-center space-x-3 space-y-0">
-        <Form.Control let:attrs>
-          <RadioGroup.Item value=true {...attrs} />
+          <input checked={subscriber} on:change={updateSubscribed} type="radio" name="subscriber" value={false} /> 
           <Form.Label class="font-normal">Företag</Form.Label>
         </Form.Control>
-      </div>
-      <RadioGroup.Input name="isForetag" />
-    </RadioGroup.Root>
     <Form.FieldErrors />
-  </Form.Fieldset>
+  </Form.Field>
 
 
-  {#if showSubscriber == true}
+  {#if subscriber == true}
   <div class="order-2 col-span-2 w-1/2">
   <Form.Field {form} name="subscriptionNumber">
     <Form.Control let:attrs>
@@ -176,9 +153,9 @@
     <Form.FieldErrors />
   </Form.Field>
 
-{/if}
+  {/if}
 
-  {#if showSubscriber == false}
+  {#if subscriber == false}
 
   <Form.Field {form} name="phoneNumber" class="order-4 col-span-2">
     <Form.Control let:attrs>
@@ -293,10 +270,10 @@
 <div class="border p-4 my-4">
   <p>Information om annonsen:</p>
   <ul>
-    {#if showSubscriber == true}
+    {#if subscriber}
       <li>Namn: {$formData.name}</li>
     {/if}
-    {#if showSubscriber == false}
+    {#if !subscriber}
       <li>Företagsnamn: {$formData.name}</li>
       <li>Organisationsnummer: {$formData.orgnr}</li>
       <li>Fakturauppgifter: {$formData.billing}, {$formData.billingPostalCode}, {$formData.billingOrt} </li>
