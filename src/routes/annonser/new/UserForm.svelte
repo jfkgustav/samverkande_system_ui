@@ -8,15 +8,15 @@
 	import { updateAdvertiserSchema, type UpdateAdvertiserSchema } from "../schema";
 	import { zodClient } from "sveltekit-superforms/adapters";
 
-    let subscribed = false;
+    let subscribed:boolean
     let subscriptionNumber: string;
     let orgNr: string;
     let accountValidated: string = '';
 
-    export let data: SuperValidated<UpdateAdvertiserSchema>;
+    export let userData: SuperValidated<UpdateAdvertiserSchema>;
 
     
-    const form = superForm(data, {
+    const form = superForm(userData, {
         validators: zodClient(updateAdvertiserSchema),
         dataType: 'json'
     });
@@ -102,7 +102,7 @@
     }
 </script>
 
-<div class="flex py-5 flex-col bg-slate-800 text-white gap-4 h-screen px-5">
+<div class="flex grid grid-cols-2">
     <div class="flex items-center flex-col gap-5">
         <h1 class="text-3xl font-semibold">
             Välkommen!
@@ -134,74 +134,79 @@
         </div>
         {/if}
     </div>
-    <div class="w-1/2 bg-slate-400 text-black p-4 rounded-xl">
-       <form method="POST" use:enhance>
-            <Form.Field {form} name="namn">
-                <Form.Control let:attrs>
-                    <Form.Label>Namn</Form.Label>
-                    <Input {...attrs} bind:value={$formData.namn} />
-                </Form.Control>
-                <Form.FieldErrors />
-            </Form.Field>
-            <Form.Field {form} name="telefon">
-                <Form.Control let:attrs>
-                    <Form.Label>Telefon</Form.Label>
-                    <Input {...attrs} bind:value={$formData.telefon} type="tel" />
-                </Form.Control>
-                <Form.FieldErrors />
-            </Form.Field>
-            <div>
-                <h1 class="text-xl text-slate-800 font-semibold">Leveransadress</h1>
-                <Form.Field {form} name="leveransAdress.adress">
+    {#if subscribed != undefined}
+        <div class="bg-slate-400 text-black p-4 rounded-xl">
+            <form method="POST" use:enhance>
+                <Form.Field {form} name="namn">
                     <Form.Control let:attrs>
-                        <Label>Adress</Label>
-                        <Input {...attrs} bind:value={$formData.leveransAdress.adress} />
+                        <Form.Label>Namn</Form.Label>
+                        <Input {...attrs} bind:value={$formData.namn} />
                     </Form.Control>
                     <Form.FieldErrors />
                 </Form.Field>
-                <Form.Field {form} name="leveransAdress.ort">
+                <Form.Field {form} name="telefon">
                     <Form.Control let:attrs>
-                        <Label>Ort</Label>
-                        <Input {...attrs} bind:value={$formData.leveransAdress.ort} />
+                        <Form.Label>Telefon</Form.Label>
+                        <Input {...attrs} bind:value={$formData.telefon} type="tel" />
                     </Form.Control>
                     <Form.FieldErrors />
                 </Form.Field>
-                <Form.Field {form} name="leveransAdress.postNummer">
-                    <Form.Control let:attrs>
-                        <Label>Postnummer</Label>
-                        <Input {...attrs} bind:value={$formData.leveransAdress.postNummer} />
-                    </Form.Control>
-                    <Form.FieldErrors />
-                </Form.Field>
-            </div>
-            <div>
-                <h1 class="text-xl text-slate-800 font-semibold">Fakturaadress</h1>
-                <Form.Field {form} name="fakturaAdress.adress">
-                    <Form.Control let:attrs>
-                        <Label>Adress</Label>
-                        <Input {...attrs} bind:value={$formData.fakturaAdress.adress} />
-                    </Form.Control>
-                    <Form.FieldErrors />
-                </Form.Field>
-                <Form.Field {form} name="fakturaAdress.ort">
-                    <Form.Control let:attrs>
-                        <Label>Ort</Label>
-                        <Input {...attrs} bind:value={$formData.fakturaAdress.ort} />
-                    </Form.Control>
-                    <Form.FieldErrors />
-                </Form.Field>
-                <Form.Field {form} name="fakturaAdress.postNummer">
-                    <Form.Control let:attrs>
-                        <Label>Postnummer</Label>
-                        <Input {...attrs} bind:value={$formData.fakturaAdress.postNummer} />
-                    </Form.Control>
-                    <Form.FieldErrors />
-                </Form.Field>
-            </div>
-            <Form.Button>Spara uppgifter</Form.Button>
-       </form>
-    </div>
+                <div>
+                    <h1 class="text-xl text-slate-800 font-semibold">Leveransadress</h1>
+                    <Form.Field {form} name="leveransAdress.adress">
+                        <Form.Control let:attrs>
+                            <Label>Adress</Label>
+                            <Input {...attrs} bind:value={$formData.leveransAdress.adress} />
+                        </Form.Control>
+                        <Form.FieldErrors />
+                    </Form.Field>
+                    <Form.Field {form} name="leveransAdress.ort">
+                        <Form.Control let:attrs>
+                            <Label>Ort</Label>
+                            <Input {...attrs} bind:value={$formData.leveransAdress.ort} />
+                        </Form.Control>
+                        <Form.FieldErrors />
+                    </Form.Field>
+                    <Form.Field {form} name="leveransAdress.postNummer">
+                        <Form.Control let:attrs>
+                            <Label>Postnummer</Label>
+                            <Input {...attrs} bind:value={$formData.leveransAdress.postNummer} />
+                        </Form.Control>
+                        <Form.FieldErrors />
+                    </Form.Field>
+                </div>
+                {#if !subscribed}
+                    <div>
+                        <h1 class="text-xl text-slate-800 font-semibold">Fakturaadress</h1>
+                        <Form.Field {form} name="fakturaAdress.adress">
+                            <Form.Control let:attrs>
+                                <Label>Adress</Label>
+                                <Input {...attrs} bind:value={$formData.fakturaAdress.adress} />
+                            </Form.Control>
+                            <Form.FieldErrors />
+                        </Form.Field>
+                        <Form.Field {form} name="fakturaAdress.ort">
+                            <Form.Control let:attrs>
+                                <Label>Ort</Label>
+                                <Input {...attrs} bind:value={$formData.fakturaAdress.ort} />
+                            </Form.Control>
+                            <Form.FieldErrors />
+                        </Form.Field>
+                        <Form.Field {form} name="fakturaAdress.postNummer">
+                            <Form.Control let:attrs>
+                                <Label>Postnummer</Label>
+                                <Input {...attrs} bind:value={$formData.fakturaAdress.postNummer} />
+                            </Form.Control>
+                            <Form.FieldErrors />
+                        </Form.Field>
+                    </div>
+                {/if}
+                <Form.Button>Spara uppgifter</Form.Button>
+            </form>
+        </div>
+    {/if}
 </div>
+
 
 
 

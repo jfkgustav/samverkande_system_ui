@@ -38,7 +38,7 @@ export type UpdateAdvertiserSchema = z.infer<typeof updateAdvertiserSchema>;
 export const annonsSchema = z.object({
     rubrik: z.string({required_error: "Du måste ange rubrik", invalid_type_error: "Otillåtna tecken används."}).min(2).max(40),
     innehall: z.string({required_error: "Du måste ange ort", invalid_type_error: "Otillåtna tecken används."}).min(10).max(400),
-    pris: z.number().min(1).max(9999),
+    pris: z.coerce.number().min(1).max(2000000),
     annonsPris: z.number().min(1).max(9999),
     orgNr: z.string(),
 });
