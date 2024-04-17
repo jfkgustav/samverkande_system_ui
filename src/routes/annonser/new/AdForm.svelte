@@ -19,7 +19,7 @@
 </script>
 
 <div class=" bg-slate-400 text-black p-4 rounded-xl">
-    <form method="POST" action="?/insertAd" use:enhance>
+    <form method="POST" use:enhance>
         <Form.Field {form} name="rubrik">
             <Form.Control let:attrs>
                 <Form.Label>Annonsens rubrik</Form.Label>
@@ -55,7 +55,7 @@
         </Form.Field>
        
         
-        <Form.Button>Skapa annons</Form.Button>
+        <Form.Button formaction="?/createAd">Skapa annons</Form.Button>
 
 
     </form>

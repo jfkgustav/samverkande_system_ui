@@ -10,6 +10,7 @@ export const load: PageServerLoad = async () => {
     return {
         userForm: await superValidate(zod(updateAdvertiserSchema)),
         adForm: await superValidate(zod(annonsSchema)),
+        form: await superValidate(zod(updateAdvertiserSchema)),
         ok: false,
     }
 }
@@ -23,7 +24,6 @@ export const actions: Actions = {
         const userForm = await superValidate(event, zod(updateAdvertiserSchema));
         
         if(!userForm.valid) {
-            console.log("USERFORM INVALID")
             return fail(400, {
                 userForm,
             });
@@ -37,36 +37,12 @@ export const actions: Actions = {
             leveransAdress: userForm.data.leveransAdress
         }
 
-
-        try {
-            console.log(updateForm.namn)
-            console.log("Orgnr: " + updateForm.orgNr)
-            console.log(updateForm.fakturaAdress)
-            console.log(updateForm.leveransAdress)
-            console.log(updateForm.telefon)
-
-            const res = await fetch('http://localhost:8080/advertisers', {
-                method: 'PUT',
-                body: JSON.stringify(updateForm),
-            }).then(response => {
-                if (!response.ok) {
-                    throw new Error('Server returned ' + response.status);
-                }
+        if(!await updateAdvertiser(updateForm)) {
+            return fail(400, {
+                form: userForm,
+                fail: "Failed to update user"
             });
-
-            console.log("Är det här det krashar?")
-
-            if(!res.ok) {
-                "men går det in här också?"
-                throw error(res.status, res.statusText);
-            }
-
-        } catch(e) {
-            console.log("det går in i catch")
-            console.error(e);
         }
-
-
 
         return {
             ok: true,
@@ -135,7 +111,26 @@ interface ad {
     }
 
 const updateAdvertiser = async (data: updateUser):Promise<boolean> => {
-   
+    try {
+     
+        const res = await fetch('http://localhost:8080/advertisers', {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+
+        console.log("Är det här det krashar?")
+
+        if(!res.ok) {
+            console.log("men går det in här också?")
+            throw error(res.status, res.statusText);
+        }
+
+        return true;
+    } catch(e) {
+        console.log("det går in i catch")
+        console.error(e);
+        return false;
+    }
 }
 
 const insertAd = async (adData: ad, userData: updateUser):Promise<boolean> => {
