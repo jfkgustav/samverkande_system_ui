@@ -201,7 +201,7 @@
                         </Form.Field>
                     </div>
                 {/if}
-                <Form.Button>Spara uppgifter</Form.Button>
+                <Form.Button formaction="?/updateUser">Spara uppgifter</Form.Button>
             </form>
         </div>
     {/if}
